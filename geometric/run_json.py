@@ -246,7 +246,10 @@ def geometric_run_json(in_json_dict):
     params = geometric.optimize.OptParams(**input_opts)
     dirname = tempfile.mkdtemp()
 
-    if hess is not None:
+    # Only treat `hessian` as explicit Hessian matrix data when array-like.
+    # String modes such as "never", "first", "last", etc. are optimizer
+    # options and must not be reshaped as numeric Hessian data.
+    if hess is not None and not isinstance(hess, str):
         n = len(coords)
         params.hess_data = np.array(hess).reshape(n, n)
 
